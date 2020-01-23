@@ -1,5 +1,7 @@
 package com.dieselpoint.norm;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -207,8 +209,12 @@ public class Query {
 					for (int i = 1; i <= colCount; i++) {
 						String colName = meta.getColumnLabel(i);
 						Object colValue = sqlMaker.convertValue(rs.getObject(i), meta.getColumnTypeName(i));
-
-						pojoInfo.putValue(row, colName, colValue, true);
+						if(colValue instanceof BigDecimal)
+							pojoInfo.putValue(row, colName, ((BigDecimal)colValue).longValue(), true);
+						else if(colValue instanceof BigInteger)
+							pojoInfo.putValue(row, colName, ((BigInteger)colValue).longValue(), true);
+						else
+							pojoInfo.putValue(row, colName, colValue, true);
 					}
 					out.add(row);
 				}
